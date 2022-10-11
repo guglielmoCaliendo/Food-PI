@@ -1,11 +1,11 @@
 import { v4 as uuid } from 'uuid';
 
 export const errorsInitialState = {
-  name: false,
-  nameCoinsidence: false,
-  abstract: false,
-  health_score: false,
-  img_url: false,
+  title: false,
+  titleCoinsidence: false,
+  summary: false,
+  healthScore: false,
+  image: false,
   diets: false,
   steps: false,
 };
@@ -54,38 +54,42 @@ export const removeStep = (e, id, data, setter) => {
 };
 
 export const errorSetter = (recipes, target, state, setter) => {
-  const nameRegEx = new RegExp(/^[a-zA-Z0-9_ ]{3,20}$/);
+  const titleRegEx = new RegExp(/^[a-zA-Z0-9_ ]{3,20}$/);
   const urlRegEx = new RegExp(
     // eslint-disable-next-line no-useless-escape
     /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi
   );
 
-  if (target.name === 'name') {
-    if (!target.value.match(nameRegEx)) {
+  if (target.name === 'title') {
+    if (!target.value.match(titleRegEx)) {
       return setter({ ...state, [target.name]: true });
-    } else if (recipes.some((recipe) => recipe.name === target.value)) {
-      return setter({ ...state, nameCoinsidence: true });
+    } else if (
+      recipes.some(
+        (recipe) => recipe.title.toLowerCase() === target.value.toLowerCase()
+      )
+    ) {
+      return setter({ ...state, titleCoinsidence: true });
     } else {
-      if (state.nameCoinsidence) {
-        return setter({ ...state, nameCoinsidence: false });
+      if (state.titleCoinsidence) {
+        return setter({ ...state, titleCoinsidence: false });
       } else {
         return setter({ ...state, [target.name]: false });
       }
     }
   }
 
-  if (target.name === 'abstract') {
+  if (target.name === 'summary') {
     if (target.value.length < 150)
       return setter({ ...state, [target.name]: true });
     return setter({ ...state, [target.name]: false });
   }
 
-  if (target.name === 'health_score') {
+  if (target.name === 'healthScore') {
     if (target.value > 100) return setter({ ...state, [target.name]: true });
     return setter({ ...state, [target.name]: false });
   }
 
-  if (target.name === 'img_url') {
+  if (target.name === 'image') {
     if (!target.value.match(urlRegEx))
       return setter({ ...state, [target.name]: true });
     return setter({ ...state, [target.name]: false });

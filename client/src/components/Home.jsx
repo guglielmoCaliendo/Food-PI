@@ -1,14 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import RecipeCard from './RecipeCard';
 import SortButtons from './SortButtons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getRecipes,
-  getDiets,
-  setCurrentPage,
-  getRecipesSort,
-} from '../state/actions/index';
+import { getRecipes, getDiets, setCurrentPage } from '../state/actions/index';
 import { customSort } from '../helpers/Home.helper';
 
 export default function Home() {
@@ -19,18 +14,34 @@ export default function Home() {
   const currentPage = useSelector((store) => store.currentPage);
   const sort = useSelector((store) => store.sort);
   const order = useSelector((store) => store.order);
-
-  console.log(recipes);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    sort.length ? dispatch(getRecipesSort(sort)) : dispatch(getRecipes());
+    setLoading(true);
+    dispatch(getRecipes());
     dispatch(getDiets());
-  }, [dispatch, currentPage, sort]);
+    setLoading(false);
+  }, [dispatch]);
 
-  const filteredRecipes = recipes.filter((recipe) => {
-    if (search) {
-      return recipe.name.includes(search);
+  const dietSorter = (arr, target) =>
+    target.every((value) => arr.includes(value));
+
+  const filteredRecipes = customSort(recipes, order).filter((recipe) => {
+    if (search && sort) {
+      return (
+        recipe.title.toLowerCase().includes(search) &&
+        dietSorter(recipe.diets, sort)
+      );
     }
+
+    if (sort) {
+      return dietSorter(recipe.diets, sort);
+    }
+
+    if (search) {
+      return recipe.title.toLowerCase().includes(search);
+    }
+
     return recipes;
   });
 
@@ -47,34 +58,36 @@ export default function Home() {
   };
 
   const paginatedRecipes = () => {
-    if (order) {
-      return customSort(filteredRecipes, order).slice(
-        currentPage,
-        currentPage + 9
-      );
-    }
     return filteredRecipes.slice(currentPage, currentPage + 9);
   };
 
   const recipesRender = paginatedRecipes().map((recipe) => {
     return (
       <RecipeCard
-        key={recipe.name}
+        key={recipe.id}
         id={recipe.id}
-        image={recipe.img_url}
-        title={recipe.name}
+        image={recipe.image}
+        title={recipe.title}
         diets={recipe.diets}
-        score={recipe.health_score}
+        score={recipe.healthScore}
       />
     );
   });
 
   return (
     <div>
-      <SortButtons diets={diets} />
-      <Conatiner>{recipesRender}</Conatiner>
-      <NextButton onClick={() => nextPage()}>{`>`}</NextButton>
-      <PrevButton onClick={() => prevPage()}>{`<`}</PrevButton>
+      {loading ? (
+        <LoadingOverlay>
+          <Loading>Loading</Loading>
+        </LoadingOverlay>
+      ) : (
+        <div>
+          <SortButtons diets={diets} />
+          <Conatiner>{recipesRender}</Conatiner>
+          <NextButton onClick={() => nextPage()}>{`>`}</NextButton>
+          <PrevButton onClick={() => prevPage()}>{`<`}</PrevButton>
+        </div>
+      )}
     </div>
   );
 }
@@ -132,5 +145,32 @@ const PrevButton = styled.div`
   &: hover {
     transform: scale(1.05);
     transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+`;
+
+const LoadingOverlay = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Loading = styled.div`
+  display: flex;
+  width: 450px;
+  max-height: 400px;
+  padding: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25px;
+  background: #fefffb;
+  box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 820px) {
+    width: 350px;
   }
 `;

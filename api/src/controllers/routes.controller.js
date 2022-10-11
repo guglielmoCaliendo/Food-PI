@@ -1,59 +1,28 @@
 const { Recipe, Diet } = require('../db.js');
-const { Op } = require('sequelize');
+const axios = require('axios');
 
 const getRecipes = async (req, res) => {
-  const { name, sort } = req.query;
-
   try {
-    if (!name) {
-      const recipes = await Recipe.findAll({ include: Diet });
-      return res.send(recipes);
-    }
-    if (sort) {
-      const recipes = await Recipe.findAll({});
-    }
-    const recipes = await Recipe.findAll({
-      where: {
-        name: {
-          [Op.substring]: name,
-        },
-        include: Diet,
-      },
-    });
+    const recipes = await axios('http://localhost:4000/results')
+      .then((res) => res.data)
+      .catch((err) => err.message);
 
-    if (recipes.length) {
-      return res.send(recipes);
-    }
+    const dbRecipes = JSON.parse(
+      JSON.stringify(await Recipe.findAll({ include: Diet }))
+    );
 
-    res
-      .status(404)
-      .send(`Sorry, we can't find any recipe that contains ${name}.`);
+    const formatedDBRecipes = await dbRecipes.map((recipe) => ({
+      ...recipe,
+      diets: recipe.diets.map((diet) => diet.name),
+    }));
+
+    res.send([...formatedDBRecipes, ...recipes]);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 };
 
-const getSortedRecipes = async (req, res) => {
-  const { diets } = req.query;
-  try {
-    console.log(diets);
-    const recipes = await Recipe.findAll({
-      include: [
-        {
-          model: Diet,
-          where: {
-            name: diets.split(','),
-          },
-        },
-      ],
-    });
-    res.send(recipes);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-};
-
-const getRecipesById = async (req, res) => {
+const getdbRecipesById = async (req, res) => {
   const { id } = req.params;
   try {
     const recipe = await Recipe.findOne({
@@ -62,24 +31,35 @@ const getRecipesById = async (req, res) => {
       },
       include: Diet,
     });
-
     res.send(recipe);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 };
 
+const getRecipesById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const recipes = await axios(`http://localhost:4000/results/${id}`)
+      .then((res) => res.data)
+      .catch((err) => err.message);
+    res.send(recipes);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
 const createRecipe = async (req, res) => {
-  const { name, abstract, health_score, img_url, steps, diets } = req.body;
-  if (!name || !abstract) {
-    return res.status(500).send('Sorry, name and abstract are required.');
+  const { title, summary, healthScore, image, steps, diets } = req.body;
+  if (!title || !summary) {
+    return res.status(500).send('Sorry, name and summary are required.');
   }
   try {
     const newRecipe = await Recipe.create({
-      name,
-      abstract,
-      health_score,
-      img_url,
+      title,
+      summary,
+      healthScore,
+      image,
       steps: JSON.stringify(steps),
     });
 
@@ -89,20 +69,26 @@ const createRecipe = async (req, res) => {
 
     res.send(newRecipe);
   } catch (error) {
-    console.log(error.message);
     res.status(500).send({ error: error.message });
   }
 };
 
 const getDiets = async (req, res) => {
-  const diets = await Diet.findAll();
-  res.send(diets);
+  try {
+    const diets = await await axios('http://localhost:4000/diets').then(
+      (res) => res.data
+    );
+
+    res.send(diets);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
 };
 
 module.exports = {
   getRecipes,
-  getSortedRecipes,
   getRecipesById,
+  getdbRecipesById,
   createRecipe,
   getDiets,
 };

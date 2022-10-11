@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getDiets, createRecipe } from '../state/actions';
+import { getDiets, createRecipe, getRecipes } from '../state/actions';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import styled from 'styled-components';
@@ -16,10 +16,10 @@ import {
 export default function CreateRecipe() {
   // #################################################### Logic #######################################################################
   const formIninitialState = {
-    name: '',
-    abstract: '',
-    health_score: '',
-    img_url: '',
+    title: '',
+    summary: '',
+    healthScore: '',
+    image: '',
     steps: [{ id: uuid(), step: '' }],
     diets: [],
   };
@@ -30,11 +30,16 @@ export default function CreateRecipe() {
   const [selectedDiet, setSelectedDiet] = useState(dietsInitialState);
   const [formData, setFormData] = useState(formIninitialState);
   const [errors, setErrors] = useState(errorsInitialState);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    dispatch(getRecipes());
     dispatch(getDiets());
   }, [dispatch]);
 
+  console.log(errors);
+
+  /* // ############################## Diets logic ################################### */
   const setDiet = (e) => {
     e.preventDefault();
     let updatedFormData = {};
@@ -61,6 +66,8 @@ export default function CreateRecipe() {
     setFormData(updatedFormData);
   };
 
+  /* // ############################## Handle Change logic ################################### */
+
   const handleChange = (id, e) => {
     const index = formData.steps.findIndex((step) => step.id === id);
 
@@ -81,6 +88,8 @@ export default function CreateRecipe() {
     setFormData(updatedFormData);
   };
 
+  /* // ############################## Handle Submit logic ################################### */
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -89,19 +98,19 @@ export default function CreateRecipe() {
       JSON.stringify({ ...formData, steps: [] })
     ) {
       return setErrors({
-        name: true,
-        abstract: true,
-        health_score: true,
-        img_url: true,
+        title: true,
+        summary: true,
+        healthScore: true,
+        image: true,
         diets: true,
         steps: true,
       });
     }
-    if (!formData.name) return setErrors({ ...errors, name: true });
-    if (!formData.abstract) return setErrors({ ...errors, abstract: true });
-    if (!formData.health_score)
-      return setErrors({ ...errors, health_score: true });
-    if (!formData.img_url) return setErrors({ ...errors, img_url: true });
+    if (!formData.title) return setErrors({ ...errors, title: true });
+    if (!formData.summary) return setErrors({ ...errors, summary: true });
+    if (!formData.healthScore)
+      return setErrors({ ...errors, healthScore: true });
+    if (!formData.image) return setErrors({ ...errors, image: true });
     if (formData.steps[0].step.length === 0)
       return setErrors({ ...errors, steps: true });
     if (formData.diets.length === 0)
@@ -109,6 +118,11 @@ export default function CreateRecipe() {
 
     dispatch(createRecipe(formatData(formData)));
     setFormData(formIninitialState);
+    setSelectedDiet(dietsInitialState);
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+    }, 3000);
   };
 
   // #################################################### End of Logic #######################################################################
@@ -118,77 +132,78 @@ export default function CreateRecipe() {
       <StyledForm onSubmit={(e) => handleSubmit(e)}>
         <h1>Create new recipe</h1>
         <Container>
+          {/* // ############################## Title input ################################### */}
           <InputContainer>
-            <StyledLabel htmlFor='name'>Name</StyledLabel>
+            <StyledLabel htmlFor='name'>Title</StyledLabel>
             <StyledInput
               onChange={(e) => handleChange(null, e)}
               type='text'
-              id='name'
-              name='name'
-              value={formData.name}
+              id='title'
+              name='title'
+              value={formData.title}
             />
-            {errors.nameCoinsidence && (
+            {errors.titleCoinsidence && (
               <ErrorMessage>
-                Sorry, we already have a recipe whit this name.
+                Sorry, we already have a recipe whit this title.
               </ErrorMessage>
             )}
-            {errors.name && (
+            {errors.title && (
               <ErrorMessage>
-                The name of the recipe shouldn't have any special character and
+                The title of the recipe shouldn't have any special character and
                 at least 3 - 20 characters.
               </ErrorMessage>
             )}
           </InputContainer>
-
+          {/* // ############################## Summary input ################################### */}
           <InputContainer>
-            <StyledLabel htmlFor='abstract'>Abstract</StyledLabel>
+            <StyledLabel htmlFor='summary'>Summary</StyledLabel>
             <StyledInput
               type='text'
-              id='abstract'
-              name='abstract'
-              value={formData.abstract}
+              id='summary'
+              name='summary'
+              value={formData.summary}
               onChange={(e) => handleChange(null, e)}
             />
-            {errors.abstract && (
+            {errors.summary && (
               <ErrorMessage>
-                The abstract should have at least 150 characters.
+                The summary should have at least 150 characters.
               </ErrorMessage>
             )}
           </InputContainer>
-
+          {/* // ############################## Health Score input ################################### */}
           <InputContainer>
             <StyledLabel htmlFor='score'>Health Score</StyledLabel>
             <StyledInput
               type='number'
               id='score'
-              name='health_score'
-              value={formData.health_score}
+              name='healthScore'
+              value={formData.healthScore}
               min={0}
               max={100}
               onChange={(e) => handleChange(null, e)}
             />
 
-            {errors.health_score && (
+            {errors.healthScore && (
               <ErrorMessage>
                 Please add any health score to the recipe between 1 - 100.
               </ErrorMessage>
             )}
           </InputContainer>
-
+          {/* // ############################## Image input ################################### */}
           <InputContainer>
             <StyledLabel htmlFor='image'>Image Url</StyledLabel>
             <StyledInput
               type='text'
               id='image'
-              name='img_url'
-              value={formData.img_url}
+              name='image'
+              value={formData.image}
               onChange={(e) => handleChange(null, e)}
             />
-            {errors.img_url && (
+            {errors.image && (
               <ErrorMessage>Please add a correct URL.</ErrorMessage>
             )}
           </InputContainer>
-
+          {/* // ############################## Steps input ################################### */}
           <InputContainer>
             <StyledLabel>Steps</StyledLabel>
             {formData.steps.map((step) => (
@@ -222,17 +237,17 @@ export default function CreateRecipe() {
             )}
           </InputContainer>
         </Container>
-
+        {/* // ############################## Diets input ################################### */}
         <DietContainer>
           {diets.map((diet) => {
             return (
               <button
                 onClick={(e) => setDiet(e)}
-                key={diet.id}
-                name={diet.name}
-                className={selectedDiet[diet.name] ? 'selected' : null}
+                key={diet}
+                name={diet}
+                className={selectedDiet[diet] ? 'selected' : null}
               >
-                {capitalize(diet.name)}
+                {capitalize(diet)}
               </button>
             );
           })}
@@ -243,7 +258,13 @@ export default function CreateRecipe() {
           </ErrorMessage>
         )}
 
-        <SubmitButton>Create</SubmitButton>
+        {success && <SuccessMessage>Recipe succesfuly created.</SuccessMessage>}
+
+        <SubmitButton
+          disabled={Object.values(errors).some((error) => error === true)}
+        >
+          Create
+        </SubmitButton>
       </StyledForm>
     </Overlay>
   );
@@ -257,6 +278,22 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   margin: 20px 0;
+`;
+
+const SuccessMessage = styled.p`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  background: #25cda5;
+  border: 1px solid #acacac;
+  width: 200px;
+  height: 45px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #00503d;
+  margin-bottom: 0;
 `;
 
 const Container = styled.div`

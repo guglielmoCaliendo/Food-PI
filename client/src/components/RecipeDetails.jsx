@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { capitalize } from '../helpers/components.helper';
 import { getRecipesById } from '../state/actions';
@@ -9,52 +9,66 @@ export default function RecipeDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const recipe = useSelector((store) => store.recipe);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     dispatch(getRecipesById(id));
+    setTimeout(() => {
+      setLoading(false);
+    }, 300);
   }, [dispatch, id]);
 
-  if (!recipe) {
-    return 'loading';
+  if (Object.keys(recipe).length) {
+    return (
+      <Overlay>
+        {loading ? (
+          <LoadingOverlay>
+            <Loading>Loading</Loading>
+          </LoadingOverlay>
+        ) : (
+          <Container>
+            <StyledAside>
+              <img src={recipe.image} alt={recipe.title} />
+              <DietsContainer>
+                {recipe.diets?.map((diet) => {
+                  return <Diet key={diet}>{capitalize(diet)}</Diet>;
+                })}
+              </DietsContainer>
+            </StyledAside>
+            <StyledSection>
+              <TitleContainer>
+                <Title>{recipe.title}</Title>
+                <Score>
+                  <h4>Health Score</h4>
+                  <p>{recipe.healthScore}</p>
+                </Score>
+              </TitleContainer>
+              <h3>Summary</h3>
+              <Para dangerouslySetInnerHTML={{ __html: recipe.summary }}></Para>
+              {recipe.instructions && <h3>Steps</h3>}
+              <div>
+                {recipe.instructions &&
+                  recipe.instructions.map((step) => {
+                    return (
+                      <div key={step.number}>
+                        <Para>
+                          {step.number}. {step.step}
+                        </Para>
+                      </div>
+                    );
+                  })}
+              </div>
+            </StyledSection>
+          </Container>
+        )}
+      </Overlay>
+    );
   }
   return (
-    <Overlay>
-      <Container>
-        <StyledAside>
-          <img src={recipe.img_url} alt={recipe.name} />
-          <DietsContainer>
-            {recipe.diets?.map((diet) => {
-              return <Diet key={diet.id}>{capitalize(diet.name)}</Diet>;
-            })}
-          </DietsContainer>
-        </StyledAside>
-        <StyledSection>
-          <TitleContainer>
-            <Title>{recipe.name ? capitalize(recipe.name) : recipe.name}</Title>
-            <Score>
-              <h4>Health Score</h4>
-              <p>{recipe.health_score}</p>
-            </Score>
-          </TitleContainer>
-          <h3>Summary</h3>
-          <Para dangerouslySetInnerHTML={{ __html: recipe.abstract }}></Para>
-          {recipe.steps && <h3>Steps</h3>}
-          <div>
-            {recipe.steps
-              ? recipe.steps?.map((step) => {
-                  return (
-                    <div key={step.number}>
-                      <Para>
-                        {step.number}. {step.step}
-                      </Para>
-                    </div>
-                  );
-                })
-              : null}
-          </div>
-        </StyledSection>
-      </Container>
-    </Overlay>
+    <LoadingOverlay>
+      <Loading>Sorry, we cant find any diet with the id {id}</Loading>
+    </LoadingOverlay>
   );
 }
 
@@ -182,5 +196,27 @@ const TitleContainer = styled.div`
   align-items: center;
   @media (max-width: 415px) {
     flex-direction: column;
+  }
+`;
+
+const LoadingOverlay = styled(Overlay)`
+  width: 100vw;
+  height: 100vh;
+`;
+
+const Loading = styled.div`
+  display: flex;
+  width: 450px;
+  max-height: 400px;
+  padding: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25px;
+  background: #fefffb;
+  box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 820px) {
+    width: 350px;
   }
 `;

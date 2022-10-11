@@ -6,5 +6,4 @@ export const SET_SEARCH = 'SET_SEARCH';
 export const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
 export const SET_SORT = 'SET_SORT';
 export const SET_ORDER = 'SET_ORDER';
-export const GET_RECIPES_SORT = 'GET_RECIPES_SORT';
 export const REMOVE_SORT = 'REMOVE_SORT';

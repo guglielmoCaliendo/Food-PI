@@ -1,8 +1,8 @@
 export const customSort = (array, order) => {
   if (order === 'A-Z')
     return array.sort((a, b) => {
-      const nameA = a.name.toUpperCase();
-      const nameB = b.name.toUpperCase();
+      const nameA = a.title.toUpperCase();
+      const nameB = b.title.toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -14,8 +14,8 @@ export const customSort = (array, order) => {
 
   if (order === 'Z-A') {
     return array.sort((a, b) => {
-      const nameA = a.name.toUpperCase();
-      const nameB = b.name.toUpperCase();
+      const nameA = a.title.toUpperCase();
+      const nameB = b.title.toUpperCase();
       if (nameA > nameB) {
         return -1;
       }
@@ -27,10 +27,10 @@ export const customSort = (array, order) => {
   }
 
   if (order === 'ASC') {
-    return array.sort((a, b) => b.health_score - a.health_score);
+    return array.sort((a, b) => b.healthScore - a.healthScore);
   }
 
   if (order === 'DSC') {
-    return array.sort((a, b) => a.health_score - b.health_score);
+    return array.sort((a, b) => a.healthScore - b.healthScore);
   }
 };

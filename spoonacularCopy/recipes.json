@@ -17761,6 +17761,19 @@
       "spoonacularSourceUrl": "https://spoonacular.com/homemade-hashbrowns-with-spinach-and-carrots-647016"
     }
   ],
+  "diets": [
+    "dairy free",
+    "gluten free",
+    "ketogenic",
+    "vegetarian",
+    "lacto ovo vegetarian",
+    "vegan",
+    "pescatarian",
+    "paleolithic",
+    "primal",
+    "fodmap friendly",
+    "whole 30"
+  ],
   "offset": 0,
   "number": 100,
   "totalResults": 5225

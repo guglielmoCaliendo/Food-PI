@@ -18,19 +18,17 @@ export default function SearchBar({ diets }) {
 
   const handleClick = (diet) => {
     dispatch(setCurrentPage(0));
-    !sort.includes(diet.name)
-      ? dispatch(setSort(diet.name))
-      : dispatch(removeSort(diet.name));
+    !sort.includes(diet) ? dispatch(setSort(diet)) : dispatch(removeSort(diet));
   };
 
   const renderDietsButtons = diets.map((diet) => (
     <DietsButton
       onClick={() => handleClick(diet)}
-      key={diet.id}
-      name={diet.name}
-      className={sort.includes(diet.name) ? 'selected' : null}
+      key={diet}
+      name={diet}
+      className={sort.includes(diet) ? 'selected' : null}
     >
-      {capitalize(diet.name)}
+      {capitalize(diet)}
     </DietsButton>
   ));
 

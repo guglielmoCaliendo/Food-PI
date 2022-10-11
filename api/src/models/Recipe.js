@@ -12,20 +12,20 @@ module.exports = (sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
+      title: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      abstract: {
+      summary: {
         type: DataTypes.TEXT,
         allowNull: false,
         defaultValue: '',
       },
-      img_url: {
+      image: {
         type: DataTypes.TEXT,
       },
-      health_score: {
+      healthScore: {
         type: DataTypes.INTEGER,
         defaultValues: 0,
       },

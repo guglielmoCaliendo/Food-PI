@@ -6,6 +6,10 @@ import { useNavigate } from 'react-router-dom';
 export default function RecipeCard({ title, image, score, diets, id }) {
   const navigate = useNavigate();
 
+  const renderDiets = diets.map((diet) => (
+    <Diet key={diet}>{capitalize(diet)}</Diet>
+  ));
+
   return (
     <CardContainer onClick={() => navigate(`/app/recipes/${id}`)}>
       <img src={image} alt={title} />
@@ -15,11 +19,7 @@ export default function RecipeCard({ title, image, score, diets, id }) {
           <h4>Health Score</h4>
           <p>{score}</p>
         </Score>
-        <div>
-          {diets?.map((diet) => (
-            <Diet key={diet.id}>{capitalize(diet.name)}</Diet>
-          ))}
-        </div>
+        <div>{renderDiets}</div>
       </Info>
     </CardContainer>
   );

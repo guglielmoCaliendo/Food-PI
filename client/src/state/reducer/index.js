@@ -1,6 +1,5 @@
 import {
   GET_RECIPES,
-  GET_RECIPES_SORT,
   GET_RECIPE_BY_ID,
   CREATE_RECIPE,
   GET_DIETS,
@@ -54,19 +53,39 @@ const rootReducer = (state = initialState, action) => {
         ...state,
         recipes: action.payload,
       };
-    case GET_RECIPES_SORT:
-      return {
-        ...state,
-        recipes: action.payload,
-      };
     case GET_RECIPE_BY_ID:
+      let instructions;
+      const diets = () => {
+        let formatedDiets;
+
+        if (action.payload.diets[0]) {
+          if (action.payload.diets[0].id) {
+            return (formatedDiets = action.payload.diets.map(
+              (diet) => diet.name
+            ));
+          } else {
+            // eslint-disable-next-line no-unused-vars
+            return (formatedDiets = action.payload.diets);
+          }
+        }
+      };
+      if (action.payload.steps) {
+        instructions = JSON.parse(action.payload.steps);
+      }
+      if (action.payload.analyzedInstructions) {
+        if (action.payload.analyzedInstructions[0]) {
+          instructions = action.payload.analyzedInstructions[0].steps;
+        }
+      }
+
       const formatedSteps = {
         ...action.payload,
-        abstract: action.payload.abstract.replaceAll(
+        summary: action.payload.summary.replaceAll(
           '<a',
           `<a target='_blank' rel='noreferrer'`
         ),
-        steps: action.payload.steps ? JSON.parse(action.payload.steps) : '',
+        instructions: instructions ? instructions : '',
+        diets: diets(),
       };
       return {
         ...state,

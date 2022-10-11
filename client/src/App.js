@@ -16,6 +16,7 @@ function App() {
           <Route path='create' element={<CreateRecipe />} />
           <Route path='recipes/:id' element={<RecipeDetails />} />
         </Route>
+        <Route path='*' element={<Landing />} />
       </Routes>
     </BrowserRouter>
   );
