@@ -23,9 +23,8 @@ export default function CreateRecipe() {
     steps: [{ id: uuid(), step: '' }],
     diets: [],
   };
-
-  const diets = useSelector((store) => store.diets);
   const dispatch = useDispatch();
+  const diets = useSelector((store) => store.diets);
   const recipes = useSelector((store) => store.recipes);
   const [selectedDiet, setSelectedDiet] = useState(dietsInitialState);
   const [formData, setFormData] = useState(formIninitialState);
@@ -35,18 +34,12 @@ export default function CreateRecipe() {
   useEffect(() => {
     dispatch(getRecipes());
     dispatch(getDiets());
-  }, [dispatch]);
-
-  console.log(errors);
+  }, [dispatch, setErrors]);
 
   /* // ############################## Diets logic ################################### */
   const setDiet = (e) => {
     e.preventDefault();
     let updatedFormData = {};
-
-    if (!formData.diets.length > 0) {
-      setErrors({ ...errors, diets: false });
-    }
 
     if (formData.diets.includes(e.target.name)) {
       updatedFormData = {
@@ -54,7 +47,11 @@ export default function CreateRecipe() {
         diets: formData.diets.filter((diet) => diet !== e.target.name),
       };
       setSelectedDiet({ ...selectedDiet, [e.target.name]: false });
-      setErrors({ ...errors, diets: true });
+
+      if (updatedFormData.diets.length < 1) {
+        setErrors({ ...errors, diets: true });
+      }
+
       return setFormData(updatedFormData);
     }
 
@@ -64,6 +61,9 @@ export default function CreateRecipe() {
     };
     setSelectedDiet({ ...selectedDiet, [e.target.name]: true });
     setFormData(updatedFormData);
+    if (updatedFormData.diets.length) {
+      setErrors({ ...errors, diets: false });
+    }
   };
 
   /* // ############################## Handle Change logic ################################### */
@@ -71,17 +71,17 @@ export default function CreateRecipe() {
   const handleChange = (id, e) => {
     const index = formData.steps.findIndex((step) => step.id === id);
 
-    if (formData.steps[0].step.length < 4) {
-      setErrors({ ...errors, steps: true });
-    } else {
-      setErrors({ ...errors, steps: false });
-    }
-
     let updatedFormData = { ...formData };
     if (id) {
       updatedFormData.steps[index][e.target.name] = e.target.value;
     }
     updatedFormData[e.target.name] = e.target.value;
+
+    if (updatedFormData.steps[0].step.length < 5) {
+      setErrors({ ...errors, steps: true });
+    } else {
+      setErrors({ ...errors, steps: false });
+    }
 
     errorSetter(recipes, e.target, errors, setErrors);
 
@@ -408,7 +408,7 @@ const DietContainer = styled.div`
   gap: 5px;
   margin-top: 20px;
   & button {
-    background: #fefffb;
+    background: #9d9f9e36;
     border: 2px solid #acacac;
     cursor: pointer;
     width: 120px;
@@ -423,7 +423,7 @@ const DietContainer = styled.div`
     }
   }
   & .selected {
-    background: #9d9f9e36;
+    background: #fefffb;
   }
 `;
 

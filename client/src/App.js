@@ -5,6 +5,7 @@ import SharedLayout from './components/SharedLayout';
 import CreateRecipe from './components/CreateRecipe';
 import RecipeDetails from './components/RecipeDetails';
 import Home from './components/Home';
+import PageNotFound from './components/PageNotFound';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
           <Route path='create' element={<CreateRecipe />} />
           <Route path='recipes/:id' element={<RecipeDetails />} />
         </Route>
-        <Route path='*' element={<Landing />} />
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );

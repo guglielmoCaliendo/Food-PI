@@ -26,11 +26,15 @@ export const customSort = (array, order) => {
     });
   }
 
-  if (order === 'ASC') {
+  if (order === 'Health Score <') {
     return array.sort((a, b) => b.healthScore - a.healthScore);
   }
 
-  if (order === 'DSC') {
+  if (order === 'Health Score >') {
     return array.sort((a, b) => a.healthScore - b.healthScore);
   }
+  return array;
 };
+
+export const dietSorter = (arr, target) =>
+  target.every((value) => arr.includes(value));

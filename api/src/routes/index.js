@@ -1,11 +1,9 @@
 const { Router } = require('express');
-const {
-  getRecipes,
-  getRecipesById,
-  getdbRecipesById,
-  createRecipe,
-  getDiets,
-} = require('../controllers/routes.controller');
+const getRecipes = require('../controllers/get-recipes.controller');
+const getRecipesById = require('../controllers/get-recipe-by-id.controller');
+const getdbRecipesById = require('../controllers/get-db-recipe-by-id.controller');
+const createRecipe = require('../controllers/create-recipe.controller');
+const getDiets = require('../controllers/get-diets.controller');
 
 const router = Router();
 

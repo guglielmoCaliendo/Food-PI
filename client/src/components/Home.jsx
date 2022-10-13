@@ -4,7 +4,7 @@ import SortButtons from './SortButtons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRecipes, getDiets, setCurrentPage } from '../state/actions/index';
-import { customSort } from '../helpers/Home.helper';
+import { customSort, dietSorter } from '../helpers/Home.helper';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -22,9 +22,6 @@ export default function Home() {
     dispatch(getDiets());
     setLoading(false);
   }, [dispatch]);
-
-  const dietSorter = (arr, target) =>
-    target.every((value) => arr.includes(value));
 
   const filteredRecipes = customSort(recipes, order).filter((recipe) => {
     if (search && sort) {

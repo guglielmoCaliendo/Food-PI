@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { capitalize } from '../helpers/components.helper';
-import { changeName, changeOrder } from '../helpers/SortButtons.helper';
+import { changeOrder } from '../helpers/SortButtons.helper';
 import {
   setSort,
   setOrder,
@@ -11,10 +11,14 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function SearchBar({ diets }) {
-  const [name, setName] = useState('Z-A');
-  const [orderScore, setOrderScore] = useState('DSC');
   const sort = useSelector((store) => store.sort);
+  let order = useSelector((store) => store.order);
+  const [name, setName] = useState(order);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setOrder(name));
+  }, [dispatch, name]);
 
   const handleClick = (diet) => {
     dispatch(setCurrentPage(0));
@@ -41,19 +45,10 @@ export default function SearchBar({ diets }) {
           onClick={() => {
             dispatch(setCurrentPage(0));
             dispatch(setOrder(name));
-            changeName(name, setName);
+            changeOrder(name, setName);
           }}
         >
           {name}
-        </StyledButton>
-        <StyledButton
-          onClick={() => {
-            dispatch(setCurrentPage(0));
-            dispatch(setOrder(orderScore));
-            changeOrder(orderScore, setOrderScore);
-          }}
-        >
-          Health Score
         </StyledButton>
       </DietsContainer>
     </Container>

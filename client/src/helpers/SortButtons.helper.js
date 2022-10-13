@@ -1,9 +1,6 @@
-export const changeName = (name, setter) => {
-  if (name === 'A-Z') return setter('Z-A');
-  setter('A-Z');
-};
-
 export const changeOrder = (name, setter) => {
-  if (name === 'ASC') return setter('DSC');
-  setter('ASC');
+  if (name === 'A-Z') return setter('Z-A');
+  if (name === 'Z-A') return setter('Health Score >');
+  if (name === 'Health Score >') return setter('Health Score <');
+  if (name === 'Health Score <') return setter('A-Z');
 };

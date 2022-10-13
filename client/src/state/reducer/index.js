@@ -18,7 +18,6 @@ const initialState = {
   currentPage: 0,
   sort: [],
   order: 'A-Z',
-  error: '',
 };
 
 const rootReducer = (state = initialState, action) => {

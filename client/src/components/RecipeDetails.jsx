@@ -17,7 +17,10 @@ export default function RecipeDetails() {
     setTimeout(() => {
       setLoading(false);
     }, 300);
+    return;
   }, [dispatch, id]);
+
+  console.log(recipe);
 
   if (Object.keys(recipe).length) {
     return (
