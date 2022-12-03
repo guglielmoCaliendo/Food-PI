@@ -20,6 +20,6 @@ app.get('/diets', (req, res) => {
   res.send(diets);
 });
 
-app.listen(4000, () => {
-  console.log('server listening at http//:localhost:4000');
+app.listen(process.env.PORT, () => {
+  console.log('server listening');
 });
